@@ -1,68 +1,73 @@
-# Hobnil — Instalador
+# Hobnil — `hobnil.edge`
 
-Instalador del dispositivo **Hobnil** (terminal de control de accesos sobre
-Raspberry Pi). Es un único binario autocontenido: aprovisiona una Pi nueva sin
-clonar ningún repositorio.
+Gestor del dispositivo **Hobnil** (terminal de control de accesos sobre
+Raspberry Pi). Un único binario autocontenido con subcomandos: instala,
+actualiza, desinstala y reporta estado, **sin clonar ningún repositorio**.
 
-## Uso
+```
+sudo ./hobnil.edge install      # (default) aprovisiona/instala el dispositivo
+sudo ./hobnil.edge update       # re-despliega la versión (idempotente)
+sudo ./hobnil.edge uninstall    # quita servicios y binarios (conserva datos)
+sudo ./hobnil.edge status       # estado de servicios, versión y panel
+```
 
-Descarga el binario para la arquitectura de tu Pi, dale permisos y ejecútalo con
-`sudo`:
+Durante `install` te pregunta lo que necesita: **modelo de PiSugar** y
+**usuario + contraseña del panel de red** (netadmin).
+
+## Descargar y ejecutar
 
 ```bash
 # Raspberry Pi OS de 64 bits (aarch64) — Pi Zero 2 W, Pi 3/4/5:
-curl -fsSLO https://github.com/utzilon/hobnil-installer/releases/latest/download/install-arm64.bin
-chmod +x install-arm64.bin
-sudo ./install-arm64.bin
+curl -fsSLO https://raw.githubusercontent.com/utzilon/hobnil-edge/main/hobnil.edge-arm64
+chmod +x hobnil.edge-arm64
+sudo ./hobnil.edge-arm64 install
+```
 
+```bash
 # Raspberry Pi OS de 32 bits (armhf):
-#   usa install-armhf.bin en su lugar
+curl -fsSLO https://raw.githubusercontent.com/utzilon/hobnil-edge/main/hobnil.edge-armhf
+chmod +x hobnil.edge-armhf
+sudo ./hobnil.edge-armhf install
 ```
 
-¿No sabes qué arquitectura tienes?
+¿No sabes tu arquitectura? `uname -m` → `aarch64` = arm64, `armv7l`/`armv6l` = armhf.
+
+Si habilitó SPI por primera vez, al terminar: `sudo reboot`.
+
+## Opciones (variables de entorno)
+
+Útiles para instalación **desatendida** (saltan las preguntas):
+
+| Variable | Efecto |
+|----------|--------|
+| `NETADMIN_USER` / `NETADMIN_PASS` | Credenciales del panel (si no, las pregunta) |
+| `NETADMIN_PORT` | Puerto del panel (default `8080`) |
+| `PISUGAR_MODEL` | Modelo exacto de PiSugar (si no, lo pregunta) |
+| `WITH_PISUGAR=0` | No instala el gestor PiSugar |
+| `WITH_TAILSCALE=0` | No instala Tailscale |
+| `PURGE=1` | En `uninstall`, borra también datos y config (incluida la DB de eventos) |
+
+Ejemplo desatendido (banco de pruebas):
 
 ```bash
-uname -m   # aarch64 -> arm64   |   armv7l/armv6l -> armhf
+sudo WITH_PISUGAR=0 WITH_TAILSCALE=0 NETADMIN_USER=admin NETADMIN_PASS=secreta ./hobnil.edge-arm64 install
 ```
-
-Tras la instalación, si habilitó SPI por primera vez:
-
-```bash
-sudo reboot
-```
-
-## Opciones
-
-Se pasan como variables de entorno antes del binario:
-
-| Variable | Default | Efecto |
-|----------|---------|--------|
-| `WITH_PISUGAR`   | `1` | Instala el gestor de energía PiSugar |
-| `WITH_TAILSCALE` | `1` | Instala Tailscale (luego `sudo tailscale up`) |
-| `PISUGAR_MODEL`  | `PiSugar 2 (2-LEDs)` | Modelo de PiSugar |
-| `NETADMIN_USER` / `NETADMIN_PASS` / `NETADMIN_PORT` | `admin` / aleatoria / `8080` | Panel de red |
-
-Ejemplo (banco de pruebas, sin batería ni VPN):
-
-```bash
-sudo WITH_PISUGAR=0 WITH_TAILSCALE=0 ./install-arm64.bin
-```
-
-Es **idempotente**: re-ejecutarlo actualiza el dispositivo y conserva su
-configuración.
 
 ## Verificar la descarga
 
 ```bash
-sha256sum -c SHA256SUMS
+curl -fsSLO https://raw.githubusercontent.com/utzilon/hobnil-edge/main/SHA256SUMS
+sha256sum --ignore-missing -c SHA256SUMS
 ```
 
-## Requisitos
+## Notas
 
-- Raspberry Pi con Raspberry Pi OS (basado en Debian).
-- Conexión a internet durante la instalación.
-- Ejecutar como `root` (`sudo`).
+- Ejecutar como `root` (`sudo`) para `install` / `update` / `uninstall`.
+- `update` es idempotente: conserva la configuración y la DB de eventos.
+- `uninstall` **conserva** los datos por defecto (la DB de accesos es auditable);
+  usa `PURGE=1` para borrarlos. No toca PiSugar ni Tailscale.
+- Requiere Raspberry Pi OS (Debian) y conexión a internet durante la instalación.
 
 ---
 
-© Utzilon. Distribución del binario del dispositivo Hobnil.
+© Utzilon — binario del dispositivo Hobnil.

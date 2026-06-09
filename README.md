@@ -18,14 +18,14 @@ Durante `install` te pregunta lo que necesita: **modelo de PiSugar** y
 
 ```bash
 # Raspberry Pi OS de 64 bits (aarch64) — Pi Zero 2 W, Pi 3/4/5:
-curl -fsSLO https://raw.githubusercontent.com/utzilon/hobnil-edge/main/hobnil.edge-arm64
+curl -fsSLO https://github.com/utzilon/hobnil-edge/releases/latest/download/hobnil.edge-arm64
 chmod +x hobnil.edge-arm64
 sudo ./hobnil.edge-arm64 install
 ```
 
 ```bash
 # Raspberry Pi OS de 32 bits (armhf):
-curl -fsSLO https://raw.githubusercontent.com/utzilon/hobnil-edge/main/hobnil.edge-armhf
+curl -fsSLO https://github.com/utzilon/hobnil-edge/releases/latest/download/hobnil.edge-armhf
 chmod +x hobnil.edge-armhf
 sudo ./hobnil.edge-armhf install
 ```
@@ -56,7 +56,7 @@ sudo WITH_PISUGAR=0 WITH_TAILSCALE=0 NETADMIN_USER=admin NETADMIN_PASS=secreta .
 ## Verificar la descarga
 
 ```bash
-curl -fsSLO https://raw.githubusercontent.com/utzilon/hobnil-edge/main/SHA256SUMS
+curl -fsSLO https://github.com/utzilon/hobnil-edge/releases/latest/download/SHA256SUMS
 sha256sum --ignore-missing -c SHA256SUMS
 ```
 
